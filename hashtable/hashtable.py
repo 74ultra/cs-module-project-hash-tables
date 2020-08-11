@@ -24,6 +24,16 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.storage = [None] * capacity
+        self.size = 0
+
+    def show_table(self):
+        new_dict = {}
+        for i in self.storage:
+            e = i
+            while e is not None:
+                new_dict[e.key] = e.value
+                e = e.next
+        return new_dict
 
     def get_num_slots(self):
         """
@@ -81,14 +91,27 @@ class HashTable:
 
         Implement this.
         """
+        self.check_size()
 
         node_ind = self.hash_index(key)
         if(self.storage[node_ind] == None):
             new_node = HashTableEntry(key, value)
             self.storage[node_ind] = new_node
-            return node_ind
-        elif(self.storage[node_ind].key == key):
-            self.storage[node_ind].value = value
+            self.size += 1
+            return
+        else:
+            current_node = self.storage[node_ind]
+            while current_node is not None:
+                if(current_node.key == key):
+                    current_node.value = value
+                    return
+                elif(current_node.key != key and current_node.next is None):
+                    new_node = HashTableEntry(key, value)
+                    current_node.next = new_node
+                    self.size += 1
+                    return
+                elif(current_node.key != key and current_node.next is not None):
+                    current_node = current_node.next
 
     def delete(self, key):
         """
@@ -99,12 +122,23 @@ class HashTable:
         Implement this.
         """
         node_ind = self.hash_index(key)
-        if(self.storage[node_ind] == None or self.storage[node_ind].key != key):
-            print(f'The key "{key}" does not exist in this table.')
+        current_node = self.storage[node_ind]
+        prev_node = None
 
-        elif(self.storage[node_ind].key == key):
-            self.storage[node_ind] = None
-            print("Deleted")
+        while current_node is not None:
+            if current_node.key == key:
+                if prev_node is None:
+                    self.storage[node_ind] = current_node.next
+                    self.size -= 1
+                    return
+                else:
+                    prev_node.next = current_node.next
+                    self.size -= 1
+                    return
+            else:
+                prev_node = current_node
+                current_node = current_node.next
+        print(f'The key "{key}" does not exist in this table.')
 
     def get(self, key):
         """
@@ -115,11 +149,14 @@ class HashTable:
         Implement this.
         """
         node_ind = self.hash_index(key)
-        if(self.storage[node_ind] == None or self.storage[node_ind].key != key):
-            print(f'The key "{key}" does not exist in this table.')
-            return None
-        elif(self.storage[node_ind].key == key):
-            return self.storage[node_ind].value
+        for i in self.storage:
+            e = i
+            while e is not None:
+                if e.key == key:
+                    return e.value
+                else:
+                    e = e.next
+        return None
 
     def resize(self, new_capacity):
         """
@@ -128,7 +165,29 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        old_table = self.show_table()
+        self.capacity = new_capacity
+        self.storage = [None] * self.capacity
+        self.size = 0
+        for i, j in old_table.items():
+            self.put(i, j)
+        print("upsized")
+
+    # def downsize(self, new_capacity):
+    #     old_table = self.show_table()
+    #     if new_capacity < 8:
+    #         new_capacity = 8
+    #     self.storage = [None] * self.capacity
+    #     self.size = 0
+    #     for i, j in old_table.items():
+    #         self.put(i, j)
+    #     print("downsized, capacity: ", self.capacity)
+
+    def check_size(self):
+        if self.size/self.capacity > 0.7:
+            self.resize(self.capacity * 2)
+        # if (self.capacity > 8) and ((self.size/self.capacity) < 0.2):
+        #     self.downsize(self.capacity / 2)
 
 
 # if __name__ == "__main__":
@@ -165,15 +224,46 @@ class HashTable:
 #         print(ht.get(f"line_{i}"))
 
 #     print("")
+xer = HashTable(8)
 
-xer = HashTable(10)
+print('initial', xer.capacity)
 
-xer.put("sky", "blue")
-xer.put("ice", "cold")
-xer.put("fire", "red")
+xer.put('sky', 'blue')
+xer.put('grass', 'green')
 
-print('key:', xer.storage[4].key, ', value:', xer.storage[4].value)
+xer.put('dirt', 'brown')
+xer.put('flamingo', 'pink')
+xer.put('oxblood', 'red')
+xer.put('pitch', 'black')
+xer.put('ocean', 'blue')
+xer.put('prison', 'orange')
+xer.put('cornflower', 'blue')
+xer.put('the color', 'purple')
+xer.put('midnight', 'blue')
+xer.put('asdf', 'asdf')
+xer.put('fdsa', 'fdsa')
+xer.put('zzz', 'zzz')
+xer.put('aaa', 'bbb')
+xer.put('ccc', 'ccc')
+xer.put('ddd', 'ddd')
+xer.put('eee', 'eee')
 
-print(xer.storage)
+print('post-add', xer.capacity)
 
-print(xer.get("sky"))
+xer.delete('zzz')
+xer.delete('aaa')
+xer.delete('ccc')
+xer.delete('ddd')
+xer.delete('eee')
+xer.delete('asdf')
+xer.delete('fdsa')
+xer.delete('the color')
+xer.delete('ocean')
+
+print('post-delete', xer.capacity)
+
+
+# print(' ')
+
+# print(xer.show_table())
+# print(xer.size)
