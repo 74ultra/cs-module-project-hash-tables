@@ -1,6 +1,15 @@
 def no_dups(s):
-    # Your code here
+    x = {}
+    y = ''
+    z = s.split(" ")
 
+    for i in z:
+        if i in x:
+            x[i] += 1
+        else:
+            x[i] = 1
+            y += (i + ' ')
+    return y.rstrip()
 
 
 if __name__ == "__main__":

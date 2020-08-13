@@ -64,6 +64,14 @@ class HashTable:
 
         # Your code here
 
+    def fnv1_f(self, key):
+        fnv_prime = 1099511628211
+        hash = 14695981039346656037
+        for char in key:
+            hash = hash * fnv_prime
+            hash = hash ^ ord(char)
+        return hash & 0xFFFFFFFFFFFFFFFF
+
     def djb2(self, key):
         """
         DJB2 hash, 32-bit
@@ -91,7 +99,7 @@ class HashTable:
 
         Implement this.
         """
-        self.check_size()
+        self.check_size_up()
 
         node_ind = self.hash_index(key)
         if(self.storage[node_ind] == None):
@@ -173,21 +181,21 @@ class HashTable:
             self.put(i, j)
         print("upsized")
 
-    # def downsize(self, new_capacity):
-    #     old_table = self.show_table()
-    #     if new_capacity < 8:
-    #         new_capacity = 8
-    #     self.storage = [None] * self.capacity
-    #     self.size = 0
-    #     for i, j in old_table.items():
-    #         self.put(i, j)
-    #     print("downsized, capacity: ", self.capacity)
+    def downsize(self, new_capacity):
+        old_table = self.show_table()
+        if new_capacity < 8:
+            new_capacity = 8
+        self.storage = [None] * self.capacity
+        self.size = 0
+        for i, j in old_table.items():
+            self.put(i, j)
+        print("downsized, capacity: ", self.capacity)
 
-    def check_size(self):
+    def check_size_up(self):
         if self.size/self.capacity > 0.7:
             self.resize(self.capacity * 2)
-        # if (self.capacity > 8) and ((self.size/self.capacity) < 0.2):
-        #     self.downsize(self.capacity / 2)
+        if (self.capacity > 8) and ((self.size/self.capacity) < 0.2):
+            self.downsize(self.capacity / 2)
 
 
 # if __name__ == "__main__":
