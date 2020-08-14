@@ -13,9 +13,7 @@ def word_count(s):
         return word_dict
     t = t.lower().split(' ')
     for i in t:
-        if i == ' ':
-            continue
-        elif i in word_dict:
+        if i in word_dict:
             word_dict[i] += 1
         elif i != '':
             word_dict[i] = 1
